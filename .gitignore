@@ -1,0 +1,9 @@
+todo.txt
+
+*.env
+
+.glitch-assests
+
+shrinkwrap.yaml
+
+node_modules/

@@ -1,0 +1,26 @@
+{
+  "name": "modmail",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.0",
+    "hastebin-gen": "^2.0.5",
+    "mongoose": "^5.11.8",
+    "require-all": "^3.0.0"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://github.com/DeathHound6/ModMail",
+    "bugs": "https://github.com/DeathHound6/ModMail/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "modmail",
+    "discordjs"
+  ]
+}
