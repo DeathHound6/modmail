@@ -8,17 +8,22 @@ module.exports = class Close extends Command {
       name: "close",
       description: "Close a ModMail thread",
       aliases: ["delete", "del"],
-      perm: "mods"
+      perm: "mods",
+      usage: ""
     });
   }
   async run(message, args) {
-    let log = await message.client.models.logs.findOne({});
+    const log = await message.client.models.logs.findOne({
+      guild: message.guild.id
+    });
     if (!log)
       return message.reply(
         "The server has not been setup. Please run the `setup` command"
       );
-    let thread = await message.client.models.threads.findOne({
-      channel: message.channel.id
+
+    const thread = await message.client.models.threads.findOne({
+      channel: message.channel.id,
+      open: true
     });
     if (thread) {
       thread.open = false;
@@ -28,6 +33,7 @@ module.exports = class Close extends Command {
       let embed = new MessageEmbed()
         .setTitle("Thread Closed")
         .setColor(message.client.data.colours.red)
+        .setTimestamp()
         .setDescription(
           "Your ModMail Thread has been closed. If you need any more help, please send another message"
         )
@@ -36,9 +42,10 @@ module.exports = class Close extends Command {
           message.client.user.displayAvatarURL({ dynamic: true })
         );
 
-      await (await message.client.users.fetch(thread.recipient))
-        .send(embed)
-        .catch(() => {});
+      const user = await message.client.users
+        .fetch(thread.recipient)
+        .catch(console.log);
+      if (user) user.send(embed).catch(console.log);
 
       await message.channel.delete("ModMail Thread Closed");
       let text = "";
@@ -47,7 +54,7 @@ module.exports = class Close extends Command {
           .map(attach => `${attach.url}`)
           .join("\n");
 
-        let author = await message.client.users.fetch(msg.author);
+        const author = message.client.users.cache.get(msg.author);
         text += `${
           author.id == thread.recipient ? "__RECIPIENT__" : "__MODERATOR__"
         } **${author.username}** => ${msg.content ? msg.content : ""} ${
@@ -57,27 +64,16 @@ module.exports = class Close extends Command {
       }
       const haste = await hastebin(text, { extension: "txt" });
 
+      if (!user) return;
       embed = new MessageEmbed()
-        .setTitle(
-          `Logs for ${(await message.client.users.fetch(thread.recipient)).tag}`
-        )
+        .setTitle(`Logs for ${user.tag}`)
         .setColor(message.client.data.colours.purple)
         .setDescription(`The [logs](${haste})`)
-        .addField(
-          "Recipient",
-          `${(await message.client.users.fetch(thread.recipient)).tag} (${
-            thread.recipient
-          })`
-        )
-        .addField(
-          "Moderator",
-          `${(await message.client.users.fetch(thread.mod)).tag} (${
-            thread.mod
-          })`
-        )
+        .addField("Recipient", `${user.tag} (${user.id})`)
         .addField("Message Count", `${thread.messages.length} messages`)
         .setTimestamp();
-      (await message.client.channels.fetch(log.logs)).send(embed);
+      const channel = message.client.channels.cache.get(log.logs);
+      if (channel) channel.send(embed);
     } else {
       message.reply("This command can only be used in a ModMail thread");
     }

@@ -9,8 +9,10 @@ class ModMailClient extends Client {
     this.data = require("./data.js");
 
     this.models = require("./database.js");
-    
+
     this.commands = new Collection();
+
+    this.owners = ["571283749652660225"];
   }
 }
 
@@ -25,7 +27,10 @@ class Event {
 }
 
 class Command {
-  constructor(client, { name = "", description = "", aliases = [], perm = "users" }) {
+  constructor(
+    client,
+    { name = "", description = "", aliases = [], perm = "users", usage = "" }
+  ) {
     this.client = client;
 
     this.name = name;
@@ -33,8 +38,10 @@ class Command {
     this.description = description;
 
     this.aliases = aliases;
-    
+
     this.perm = perm;
+      
+    this.usage = usage;
   }
 }
 

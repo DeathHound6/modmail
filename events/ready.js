@@ -15,8 +15,9 @@ module.exports = class Ready extends Event {
     });
     console.log(`Bot Online: ${this.client.user.tag}`);
 
-    let cmdFiles = req(`${process.cwd()}/commands/`);
+    const cmdFiles = req(`${__dirname}/../commands/`);
     for (let command of Object.values(cmdFiles)) {
+      if (typeof command != "function") continue;
       command = new command(this.client);
       if (!command.name || command.name.length < 1) continue;
       this.client.commands.set(command.name, command);
@@ -27,30 +28,5 @@ module.exports = class Ready extends Event {
       this.client.config.mongo.connectionString,
       this.client.config.mongo.options
     );
-    let log = await this.client.models.logs.findOne({});
-    if (!log) return;
-    let perm = await this.client.models.perms.findOne({});
-    if (!perm) return;
-
-    let members = await (await this.client.channels.fetch(
-      log.logs
-    )).guild.members.fetch();
-    members = members.array();
-    for (let i = 0; i < members.length; i++) {
-      if (members[i].user.bot) continue;
-      if (!perm.users.includes(members[i].user.id)) perm.users.push(members[i].user.id);
-      if (
-        !perm.mods.includes(members[i].user.id) &&
-        members[i].roles.cache.has(log.supportRole)
-      )
-        perm.mods.push(members[i].user.id);
-      if (
-        !perm.owners.includes(members[i].user.id) &&
-        members[i].permissions.has("MANAGE_GUILD")
-      )
-        perm.owners.push(members[i].user.id);
-    }
-    perm.updated = true;
-    await perm.save();
   }
 };
