@@ -1,9 +1,9 @@
-todo.txt
-
 *.env
 
-.glitch-assests
+.glitch-assets
 
 shrinkwrap.yaml
 
 node_modules/
+
+package-lock.json

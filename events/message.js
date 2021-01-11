@@ -6,8 +6,13 @@ module.exports = class Message extends Event {
   }
   async run(message) {
     const client = message.client;
+    if (message.author.bot) return;
 
-    if (message.channel.type == "dm") return client.commands.get("message").run(message, args);
+    if (message.channel.type == "dm")
+      return client.commands
+        .get("message")
+        .run(message);
+    
     if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
 
     const args = message.content
@@ -15,7 +20,7 @@ module.exports = class Message extends Event {
       .split(" ");
     const commandName = args.shift().toLowerCase();
 
-    if (message.channel.type == "text") {
+    if (message.channel.type != "dm") {
       let cmd = this.client.commands.find(
         e => e.name == commandName || e.aliases.includes(commandName)
       );

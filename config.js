@@ -1,9 +1,9 @@
 module.exports = {
-  prefix: "m!", // change this value for setup
-  token: process.env.TOKEN, // change this value for setup - if you use environment variables, change the value there rather than here
+  prefix: process.env.PREFIX, 
+  token: process.env.TOKEN, 
 
   mongo: {
-    connectionString: process.env.mongoConnectionString, // change this value for setup - if you use environment variables, change the value there rather than here
+    connectionString: process.env.mongoConnectionString, 
     options: {
       useUnifiedTopology: true,
       useNewUrlParser: true

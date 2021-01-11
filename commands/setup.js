@@ -23,8 +23,11 @@ module.exports = class Setup extends Command {
         "I don't have the `Manage Roles` or `Manage Channels` permissions"
       );
 
-    let log = await message.client.models.logs.findOne({});
+    const log = await message.client.models.logs.findOne({
+      guild: message.guild.id
+    });
     if (log) return message.reply("This server is already setup");
+    
     message.channel.send("Setting up ModMail Support role");
     const role = await message.guild.roles.create({
       data: {
@@ -38,7 +41,7 @@ module.exports = class Setup extends Command {
       },
       reason: "Setup command was used"
     });
-    message.channel.send("Setting up ModMail category");
+    message.channel.send("Setting up ModMail Category");
     const cat = await message.guild.channels.create("ModMail", {
       type: "category",
       topic: "The category used for all the ModMail threads and logs",
@@ -59,6 +62,7 @@ module.exports = class Setup extends Command {
         }
       ]
     });
+    
     message.channel.send("Setting up ModMail Logs channel");
     const logChannel = await message.guild.channels.create("modmail-logs", {
       type: "text",
@@ -82,7 +86,9 @@ module.exports = class Setup extends Command {
         }
       ]
     });
+    
     const doc = {
+      guild: message.guild.id,
       logs: logChannel.id,
       supportRole: role.id,
       category: cat.id
